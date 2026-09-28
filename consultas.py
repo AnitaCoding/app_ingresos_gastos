@@ -47,3 +47,17 @@ def delete_data(id):
         conexion_delete.con.commit()
     except sqlite3.Error as error:
         print('Error delete: ', error)
+
+def mostrar_ingresos():
+    conexion_ingreso = Conexion('SELECT sum(quantity) FROM movimiento WHERE quantity < 0;')
+    respuesta = conexion_ingreso.res
+    resp = formato(respuesta)
+    conexion_ingreso.con.close()
+    return resp
+
+def mostrar_gastos():
+    conexion_gasto = Conexion('SELECT sum(quantity) FROM movimiento WHERE quantity > 0;')
+    respuesta = conexion_gasto.res
+    resp = formato(respuesta)
+    conexion_gasto.con.close()
+    return resp

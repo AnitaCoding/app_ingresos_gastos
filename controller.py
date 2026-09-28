@@ -48,3 +48,11 @@ def movimiento_borrado(id:int):
     except Exception as ex:
         print(ex)
         return {'ha fallado': ' el borrado'}
+
+@app.get('/movimientos/ingresos', tags= ['Movimiento'])
+def movimiento_ingresos():
+    return mostrar_ingresos()
+
+@app.get('/movimientos/gastos', tags=['Movimiento'])
+def movimiento_gastos():
+    return mostrar_gastos()
