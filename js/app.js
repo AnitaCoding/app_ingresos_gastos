@@ -119,18 +119,62 @@ function actualizarMovimiento(){
     const quantity = document.getElementById('quantity').value
 
     if(concept === ''){
-        alert('Debes agregar un concepto')
+        alert('Debes agregar un concepto');
         return;
     }
 
     if(quantity == 0 || quantity === ''){
         alert('Debes agregar una cantidad');
-        return
+        return;
     }
-
+//formato ede aaaa-mm-dd para comparar con la fecha ingresada
     const hoy = new Date().toISOString().split('T')[0];
 
     if(!date || date > hoy){
-        alert('La fecha introducida no es válida')
+        alert('La fecha introducida no es válida');
+        return;
     }
+
+    let id_value = document.getElementById('id_campo').value
+    if (id_value === ''){
+        alert('Debes seleccionar un registro')
+        return;
+    }
+
+    fetch(`${url}/${id_value}`, {
+        method: 'PUT', 
+        headers: {
+            'Content-Type':'application/json'
+        },
+        body: JSON.stringify(
+            {
+                date:date,
+                concept:concept,
+                quantity:quantity
+            }
+        )
+    }).then(response=>{
+        if(!response.ok){
+            throw new Error(`Error HTTP: ${response.status}`)
+        }
+
+        mostrarMovimientos();
+        alert('Registro actualizado correctamente.')
+        
+        //limpiar campos del formulario
+        document.getElementById('id_campo').value = '';
+        document.getElementById('concept').value = '';
+        document.getElementById('quantity').value = '';
+        document.getElementById('fecha').value = ''; 
+
+        ocultarFormulario()
+    }).catch(
+        error=>{
+            alert('No se ha podido actualizar el movimiento')
+            console.log('Detalle error: ', error)
+        }
+    ) 
 }
+
+let actualizar = document.getElementById('btnEditar')
+actualizar.addEventListener('click', actualizarMovimiento)
