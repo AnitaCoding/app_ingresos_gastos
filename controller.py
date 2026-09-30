@@ -1,9 +1,18 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 
 from consultas import *
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],      # Permite cualquier origen (dominio)
+    allow_credentials=False,  # ¡ATENCIÓN! Debe ser False si usas "" en origins, si usa usuario y contraseña, tendrá que ser true
+    allow_methods=["*"],      # Permite todos los métodos HTTP (GET, POST, PUT, etc.)
+    allow_headers=["*"],      # Permite todas las cabeceras HTTP
+)
 
 class ModelMovimiento(BaseModel):
     date: str
