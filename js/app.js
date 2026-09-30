@@ -9,6 +9,13 @@ function ocultarFormulario(){
     document.getElementById("div-form").style.display = "none"
 }
 
+function limpiarFormulario(){
+    document.getElementById('id_campo').value = '';
+    document.getElementById('concept').value = '';
+    document.getElementById('quantity').value = '';
+    document.getElementById('fecha').value = ''; 
+}
+
 
 let nuevo = document.getElementById("btnNuevo")
 //Se puede hacer con onclick pero se recomienda evitar código js en html
@@ -45,7 +52,7 @@ function mostrarMovimientos(){
 
 }
 
-mostrarMovimientos()
+mostrarMovimientos();
 
 function capturarItemLista(){
     //accedo a la tabla completa
@@ -69,8 +76,8 @@ function capturarItemLista(){
     }
 }
 
-let tabla = document.getElementById('tabla')
-tabla.addEventListener('click', capturarItemLista)
+let tabla = document.getElementById('tabla');
+tabla.addEventListener('click', capturarItemLista);
 
 function borrarMovimiento(){
     let id_value = document.getElementById('id_campo').value
@@ -83,15 +90,11 @@ function borrarMovimiento(){
         }
         //Que muestre la tabla sin el elemento eliminado
         mostrarMovimientos();
-        alert('Registro eliminado correctamente.')
-        
-        //limpiar campos del formulario
-        document.getElementById('id_campo').value = '';
-        document.getElementById('concept').value = '';
-        document.getElementById('quantity').value = '';
-        document.getElementById('fecha').value = ''; 
 
-        ocultarFormulario()
+        alert('Registro eliminado correctamente.')
+
+        limpiarFormulario();
+        ocultarFormulario();
     }).catch(
         error=>{
             alert('No se ha podido eliminar el movimiento')
@@ -134,7 +137,6 @@ function actualizarMovimiento(){
         alert('La fecha introducida no es válida');
         return;
     }
-
     let id_value = document.getElementById('id_campo').value
     if (id_value === ''){
         alert('Debes seleccionar un registro')
@@ -144,29 +146,27 @@ function actualizarMovimiento(){
     fetch(`${url}/${id_value}`, {
         method: 'PUT', 
         headers: {
+            //Informamos el tipo de dato
             'Content-Type':'application/json'
         },
         body: JSON.stringify(
             {
                 date:date,
                 concept:concept,
-                quantity:quantity
+                quantity:Number(quantity)
             }
         )
     }).then(response=>{
+                alert("HA LLEGADO LA RESPUESTA DEL PUT");
         if(!response.ok){
             throw new Error(`Error HTTP: ${response.status}`)
         }
 
         mostrarMovimientos();
         alert('Registro actualizado correctamente.')
-        
+    
         //limpiar campos del formulario
-        document.getElementById('id_campo').value = '';
-        document.getElementById('concept').value = '';
-        document.getElementById('quantity').value = '';
-        document.getElementById('fecha').value = ''; 
-
+        limpiarFormulario();
         ocultarFormulario()
     }).catch(
         error=>{
