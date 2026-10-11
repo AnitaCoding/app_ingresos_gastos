@@ -54,6 +54,15 @@ function mostrarMovimientos(){
 
 mostrarMovimientos();
 
+function refrescoMovimiento(message){
+        mostrarMovimientos();
+        alert(message)
+    
+        //limpiar campos del formulario
+        limpiarFormulario();
+        ocultarFormulario()
+}
+
 function capturarItemLista(){
     //accedo a la tabla completa
     const tabla = document.getElementById('tabla');
@@ -81,6 +90,12 @@ tabla.addEventListener('click', capturarItemLista);
 
 function borrarMovimiento(){
     let id_value = document.getElementById('id_campo').value
+
+    if(id_value === ''){
+        alert('Debes seleccionar un registro')
+        return;
+    }
+
     fetch(`${url}/${id_value}`, {
         method: 'DELETE'
     }).then(response=>{
@@ -89,12 +104,9 @@ function borrarMovimiento(){
             throw new Error(`Error HTTP: ${response.status}`)
         }
         //Que muestre la tabla sin el elemento eliminado
-        mostrarMovimientos();
+  
+        refrescoMovimiento('Registro eliminado correctamente')
 
-        alert('Registro eliminado correctamente.')
-
-        limpiarFormulario();
-        ocultarFormulario();
     }).catch(
         error=>{
             alert('No se ha podido eliminar el movimiento')
@@ -102,6 +114,7 @@ function borrarMovimiento(){
         }
     )
 }
+
 
 function confirmarBorrado(){
     confirmacion = confirm("Estas seguro/a que deseas eliminar el registro");
@@ -115,13 +128,8 @@ function confirmarBorrado(){
 let borrar = document.getElementById('btnBorrar')
 borrar.addEventListener('click', confirmarBorrado)
 
-function actualizarMovimiento(){
-    //capturar los datos ingresados en los input
-    const date = document.getElementById('fecha').value
-    const concept = document.getElementById('concept').value
-    const quantity = document.getElementById('quantity').value
-
-    if(concept === ''){
+function validarCampos(concept, quantity, date){
+        if(concept === ''){
         alert('Debes agregar un concepto');
         return;
     }
@@ -134,9 +142,20 @@ function actualizarMovimiento(){
     const hoy = new Date().toISOString().split('T')[0];
 
     if(!date || date > hoy){
+        console.log(date)
         alert('La fecha introducida no es válida');
         return;
     }
+}
+
+function actualizarMovimiento(){
+    //capturar los datos ingresados en los input
+    const date = document.getElementById('fecha').value
+    const concept = document.getElementById('concept').value
+    const quantity = document.getElementById('quantity').value
+
+    validarCampos(concept, quantity, date)
+
     let id_value = document.getElementById('id_campo').value
     if (id_value === ''){
         alert('Debes seleccionar un registro')
@@ -157,17 +176,13 @@ function actualizarMovimiento(){
             }
         )
     }).then(response=>{
-                alert("HA LLEGADO LA RESPUESTA DEL PUT");
         if(!response.ok){
             throw new Error(`Error HTTP: ${response.status}`)
         }
 
-        mostrarMovimientos();
-        alert('Registro actualizado correctamente.')
-    
-        //limpiar campos del formulario
-        limpiarFormulario();
-        ocultarFormulario()
+    refrescoMovimiento('Registro actualizado correctamente.')
+
+
     }).catch(
         error=>{
             alert('No se ha podido actualizar el movimiento')
@@ -178,3 +193,53 @@ function actualizarMovimiento(){
 
 let actualizar = document.getElementById('btnEditar')
 actualizar.addEventListener('click', actualizarMovimiento)
+
+function altaMovimiento(){
+
+    //Capturar datos
+    const fecha = document.getElementById('fecha').value
+    const concept = document.getElementById('concept').value
+    const quantity = document.getElementById('quantity').value
+
+    if(fecha === '' || concept === '' || quantity === ''){
+        alert('Debes crear un registro')
+        return;
+    }
+
+    validarCampos(concept, quantity, fecha)
+    
+    fetch(
+        url,
+        {
+            method: 'POST',
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body: JSON.stringify(
+                {
+                    date: fecha,
+                    concept: concept,
+                    quantity: Number(quantity)
+                }
+            )
+        }
+    )
+    .then(response => {
+        if(!response.ok){
+            throw new Error(`Error HTTP: ${response.status}`)
+        }
+
+        refrescoMovimiento('Registro correcto')
+    }
+
+    )
+    .catch(
+        error=>{
+            alert('No se ha podido registrar el movimiento')
+            console.log('Detalle error: ', error)
+        }
+    );
+}
+
+let guardar = document.getElementById('btnGuardar')
+guardar.addEventListener('click', altaMovimiento)
